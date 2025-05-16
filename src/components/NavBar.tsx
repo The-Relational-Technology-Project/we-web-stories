@@ -1,0 +1,37 @@
+
+import React from 'react';
+import { Button } from '@/components/ui/button';
+
+const NavBar = () => {
+  return (
+    <nav className="py-4 px-6 md:px-10 w-full">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+          <span className="font-display text-xl font-bold text-relational-purple">we</span>
+          <span className="font-display text-xl font-bold text-relational-navy">web</span>
+        </div>
+        
+        <div className="hidden md:flex items-center space-x-6">
+          <a href="#stories" className="text-sm font-medium hover:text-relational-purple transition-colors">
+            Stories
+          </a>
+          <a href="#submit" className="text-sm font-medium hover:text-relational-purple transition-colors">
+            Submit
+          </a>
+          <a href="#contact" className="text-sm font-medium hover:text-relational-purple transition-colors">
+            Contact
+          </a>
+        </div>
+        
+        <Button 
+          className="bg-relational-purple hover:bg-relational-purple/90 text-white"
+          size="sm"
+        >
+          Join Community
+        </Button>
+      </div>
+    </nav>
+  );
+};
+
+export default NavBar;
