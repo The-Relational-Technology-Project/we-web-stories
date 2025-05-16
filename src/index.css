@@ -107,9 +107,9 @@
 }
 
 .bg-mesh {
-  background-color: #f5f2f0;
+  background-color: #fff9f0;
   background-image: 
-    radial-gradient(at 40% 20%, rgba(126, 105, 171, 0.1) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, rgba(58, 173, 168, 0.1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, rgba(231, 137, 99, 0.1) 0px, transparent 50%);
+    radial-gradient(at 40% 20%, rgba(246, 153, 63, 0.1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(237, 137, 54, 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(251, 191, 36, 0.1) 0px, transparent 50%);
 }

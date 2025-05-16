@@ -35,7 +35,7 @@ const StoryGrid = () => {
   const categories: CategoryType[] = ['all', 'learning', 'community', 'collaboration', 'discovery', 'creativity', 'abundance', 'care', 'ai'];
   
   return (
-    <section id="stories" className="py-16 bg-relational-sand/30">
+    <section id="stories" className="py-16 bg-amber-50/50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">Stories from the Relational Web</h2>
         <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
@@ -51,8 +51,8 @@ const StoryGrid = () => {
               onClick={() => filterStories(category)}
               className={
                 activeCategory === category 
-                  ? "bg-relational-purple hover:bg-relational-purple/90" 
-                  : "border-relational-purple/30 text-relational-purple hover:bg-relational-purple/10"
+                  ? "bg-amber-500 hover:bg-amber-600" 
+                  : "border-amber-300 text-amber-700 hover:bg-amber-100"
               }
             >
               {category === 'all' ? 'All Stories' : category.charAt(0).toUpperCase() + category.slice(1)}

@@ -21,7 +21,7 @@ const Hero = () => {
     <section className="py-16 md:py-24 bg-mesh">
       <div className="container mx-auto text-center px-4">
         <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-          Putting the <span className="text-relational-purple">'we'</span> back in the web
+          Putting the <span className="text-amber-500">'we'</span> back in the web
         </h1>
         <p className="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-muted-foreground">
           Imagine a web that connects us not just to information, but to each other—based on shared interests, 
@@ -29,7 +29,7 @@ const Hero = () => {
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <Button 
-            className="bg-relational-purple hover:bg-relational-purple/90 text-white"
+            className="bg-amber-500 hover:bg-amber-600 text-white"
             size="lg"
             onClick={scrollToStories}
           >
@@ -37,7 +37,7 @@ const Hero = () => {
           </Button>
           <Button 
             variant="outline" 
-            className="border-relational-teal text-relational-teal hover:bg-relational-teal/10"
+            className="border-rose-400 text-rose-500 hover:bg-rose-50"
             size="lg"
             onClick={scrollToSubmit}
           >
