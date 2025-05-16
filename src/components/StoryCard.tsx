@@ -18,7 +18,10 @@ const categoryColors = {
   community: 'bg-green-100 text-green-800',
   collaboration: 'bg-purple-100 text-purple-800',
   discovery: 'bg-amber-100 text-amber-800',
-  creativity: 'bg-rose-100 text-rose-800'
+  creativity: 'bg-rose-100 text-rose-800',
+  abundance: 'bg-emerald-100 text-emerald-800',
+  care: 'bg-sky-100 text-sky-800',
+  ai: 'bg-violet-100 text-violet-800'
 };
 
 const StoryCard: React.FC<StoryCardProps> = ({ story, onLike }) => {

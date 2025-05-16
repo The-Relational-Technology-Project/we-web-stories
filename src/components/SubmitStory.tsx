@@ -61,6 +61,9 @@ const SubmitStory = () => {
                   <SelectItem value="collaboration">Collaboration</SelectItem>
                   <SelectItem value="discovery">Discovery</SelectItem>
                   <SelectItem value="creativity">Creativity</SelectItem>
+                  <SelectItem value="abundance">Abundance</SelectItem>
+                  <SelectItem value="care">Care</SelectItem>
+                  <SelectItem value="ai">AI</SelectItem>
                 </SelectContent>
               </Select>
             </div>

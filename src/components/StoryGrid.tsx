@@ -32,7 +32,7 @@ const StoryGrid = () => {
     ? stories 
     : stories.filter(story => story.category === activeCategory);
     
-  const categories: CategoryType[] = ['all', 'learning', 'community', 'collaboration', 'discovery', 'creativity'];
+  const categories: CategoryType[] = ['all', 'learning', 'community', 'collaboration', 'discovery', 'creativity', 'abundance', 'care', 'ai'];
   
   return (
     <section id="stories" className="py-16 bg-relational-sand/30">
