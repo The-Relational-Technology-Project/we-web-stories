@@ -9,7 +9,90 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      contact_submissions: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          message: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          message: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          message?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      stories: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          likes: number
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          likes?: number
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          likes?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      story_submissions: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          email: string | null
+          id: string
+          name: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          status?: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

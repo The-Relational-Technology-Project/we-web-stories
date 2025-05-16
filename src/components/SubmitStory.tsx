@@ -6,27 +6,60 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const SubmitStory = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title || !description || !category) {
-      toast.error('Please fill out all fields');
+      toast.error('Please fill out all required fields');
       return;
     }
     
-    // Here we would normally submit to a backend
-    toast.success('Your story has been submitted!');
+    setSubmitting(true);
     
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setCategory('');
+    try {
+      const { error } = await supabase
+        .from('story_submissions')
+        .insert([
+          { 
+            title, 
+            description, 
+            category, 
+            email: email || null, 
+            name: name || null 
+          }
+        ]);
+        
+      if (error) {
+        console.error('Error submitting story:', error);
+        toast.error('Failed to submit your story');
+        return;
+      }
+      
+      toast.success('Your story has been submitted!');
+      
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setCategory('');
+      setEmail('');
+      setName('');
+      
+    } catch (err) {
+      console.error('Error submitting story:', err);
+      toast.error('Failed to submit your story');
+    } finally {
+      setSubmitting(false);
+    }
   };
   
   return (
@@ -40,18 +73,19 @@ const SubmitStory = () => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="title">Story Title</Label>
+              <Label htmlFor="title">Story Title*</Label>
               <Input 
                 id="title" 
                 placeholder="Give your story a catchy title" 
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                required
               />
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select value={category} onValueChange={setCategory}>
+              <Label htmlFor="category">Category*</Label>
+              <Select value={category} onValueChange={setCategory} required>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
@@ -69,21 +103,46 @@ const SubmitStory = () => {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Description*</Label>
               <Textarea 
                 id="description" 
                 placeholder="Describe a moment of connection in the relational web..." 
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="min-h-[120px]"
+                required
               />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Your Name (Optional)</Label>
+                <Input 
+                  id="name" 
+                  placeholder="Your name" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Your Email (Optional)</Label>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="your.email@example.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
             </div>
             
             <Button 
               type="submit" 
               className="w-full bg-relational-teal hover:bg-relational-teal/90"
+              disabled={submitting}
             >
-              Submit Your Story
+              {submitting ? 'Submitting...' : 'Submit Your Story'}
             </Button>
           </form>
         </div>

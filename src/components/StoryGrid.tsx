@@ -1,27 +1,91 @@
 
-import React, { useState } from 'react';
-import { stories as initialStories, Story } from '@/data/stories';
+import React, { useState, useEffect } from 'react';
+import { Story } from '@/data/stories';
 import StoryCard from '@/components/StoryCard';
 import { Button } from '@/components/ui/button';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 type CategoryType = Story['category'] | 'all';
 
 const StoryGrid = () => {
-  const [stories, setStories] = useState<Story[]>(initialStories);
+  const [stories, setStories] = useState<Story[]>([]);
   const [activeCategory, setActiveCategory] = useState<CategoryType>('all');
+  const [loading, setLoading] = useState(true);
   
-  const handleLike = (id: string) => {
-    setStories(prevStories => 
-      prevStories.map(story => 
-        story.id === id 
-          ? { 
-              ...story, 
-              likes: story.hasLiked ? story.likes - 1 : story.likes + 1,
-              hasLiked: !story.hasLiked 
-            } 
-          : story
-      )
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('stories')
+          .select('*');
+          
+        if (error) {
+          console.error('Error fetching stories:', error);
+          toast.error('Failed to load stories');
+          return;
+        }
+        
+        // Transform the data to match the Story type
+        const formattedStories = data.map(story => ({
+          id: story.id,
+          title: story.title,
+          description: story.description,
+          likes: story.likes,
+          category: story.category as Story['category'],
+          hasLiked: false
+        }));
+        
+        setStories(formattedStories);
+      } catch (err) {
+        console.error('Error fetching stories:', err);
+        toast.error('Failed to load stories');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStories();
+  }, []);
+  
+  const handleLike = async (id: string) => {
+    // Find the story and toggle its like status in the UI first (optimistic update)
+    const updatedStories = stories.map(story => 
+      story.id === id 
+        ? { 
+            ...story, 
+            likes: story.hasLiked ? story.likes - 1 : story.likes + 1,
+            hasLiked: !story.hasLiked 
+          } 
+        : story
     );
+    setStories(updatedStories);
+    
+    // Find the updated story to get the new likes count
+    const updatedStory = updatedStories.find(story => story.id === id);
+    if (!updatedStory) return;
+    
+    // Update the likes count in Supabase
+    try {
+      const { error } = await supabase
+        .from('stories')
+        .update({ likes: updatedStory.likes })
+        .eq('id', id);
+        
+      if (error) {
+        console.error('Error updating likes:', error);
+        toast.error('Failed to update likes');
+        
+        // Revert the optimistic update if the server update failed
+        setStories(stories);
+      }
+    } catch (err) {
+      console.error('Error updating likes:', err);
+      toast.error('Failed to update likes');
+      
+      // Revert the optimistic update if the server update failed
+      setStories(stories);
+    }
   };
   
   const filterStories = (category: CategoryType) => {
@@ -60,15 +124,27 @@ const StoryGrid = () => {
           ))}
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredStories.map(story => (
-            <StoryCard 
-              key={story.id} 
-              story={story} 
-              onLike={handleLike}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500">Loading stories...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredStories.length > 0 ? (
+              filteredStories.map(story => (
+                <StoryCard 
+                  key={story.id} 
+                  story={story} 
+                  onLike={handleLike}
+                />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-16">
+                <p className="text-gray-500">No stories found in this category.</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

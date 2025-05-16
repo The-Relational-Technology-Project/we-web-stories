@@ -1,16 +1,52 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const ContactSection = () => {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Thanks for reaching out! We\'ll be in touch soon.');
-    // Here we would normally send this to a backend
+    
+    if (!name || !email || !message) {
+      toast.error('Please fill out all fields');
+      return;
+    }
+    
+    setSubmitting(true);
+    
+    try {
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert([{ name, email, message }]);
+        
+      if (error) {
+        console.error('Error submitting contact form:', error);
+        toast.error('Failed to send your message');
+        return;
+      }
+      
+      toast.success('Thanks for reaching out! We\'ll be in touch soon.');
+      
+      // Reset form
+      setName('');
+      setEmail('');
+      setMessage('');
+      
+    } catch (err) {
+      console.error('Error submitting contact form:', err);
+      toast.error('Failed to send your message');
+    } finally {
+      setSubmitting(false);
+    }
   };
   
   return (
@@ -70,12 +106,25 @@ const ContactSection = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input id="name" placeholder="Your name" required />
+                  <Input 
+                    id="name" 
+                    placeholder="Your name" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required 
+                  />
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="Your email" required />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="Your email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required 
+                  />
                 </div>
                 
                 <div className="space-y-2">
@@ -84,6 +133,8 @@ const ContactSection = () => {
                     id="message" 
                     placeholder="How would you like to contribute?" 
                     className="min-h-[100px]"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     required
                   />
                 </div>
@@ -91,8 +142,9 @@ const ContactSection = () => {
                 <Button 
                   type="submit" 
                   className="w-full bg-relational-purple hover:bg-relational-purple/90"
+                  disabled={submitting}
                 >
-                  Send Message
+                  {submitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
             </div>
