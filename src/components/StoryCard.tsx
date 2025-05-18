@@ -57,6 +57,12 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, onLike, onHover, hoverInte
     }
   };
   
+  // Function to format category display text
+  const formatCategoryText = (category: string) => {
+    if (category === 'ai') return 'AI';
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+  
   return (
     <Card 
       className={`card-gradient h-full flex flex-col transition-all duration-300 hover:shadow-lg animate-fade-in ${wearClasses[hoverIntensity]}`}
@@ -65,7 +71,7 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, onLike, onHover, hoverInte
       <CardContent className="p-5 flex-grow">
         <div className="flex justify-between items-start mb-3">
           <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[story.category]}`}>
-            {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
+            {formatCategoryText(story.category)}
           </span>
           {hoverIntensity > 0 && (
             <div className="text-xs text-gray-400">
