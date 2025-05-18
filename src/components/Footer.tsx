@@ -8,22 +8,22 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <div className="flex items-center space-x-2">
-              <span className="font-display text-xl font-bold text-relational-purple">we</span>
-              <span className="font-display text-xl font-bold text-white">web</span>
+              <span className="font-display text-xl font-bold text-relational-coral">Relational</span>
+              <span className="font-display text-xl font-bold text-white">Web</span>
             </div>
             <p className="text-sm text-relational-sand/70 mt-1">
-              Putting the 'we' back in the web.
+              Connecting people in meaningful ways.
             </p>
           </div>
           
           <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-            <a href="#stories" className="text-sm hover:text-relational-purple transition-colors">
+            <a href="#stories" className="text-sm hover:text-relational-coral transition-colors">
               Stories
             </a>
-            <a href="#submit" className="text-sm hover:text-relational-purple transition-colors">
+            <a href="#submit" className="text-sm hover:text-relational-coral transition-colors">
               Submit
             </a>
-            <a href="#contact" className="text-sm hover:text-relational-purple transition-colors">
+            <a href="#contact" className="text-sm hover:text-relational-coral transition-colors">
               Contact
             </a>
           </div>

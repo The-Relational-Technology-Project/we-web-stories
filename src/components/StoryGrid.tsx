@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Story } from '@/data/stories';
 import StoryCard from '@/components/StoryCard';
@@ -37,7 +36,9 @@ const StoryGrid = () => {
           hasLiked: false
         }));
         
-        setStories(formattedStories);
+        // Sort stories to put important ones first
+        const sortedStories = organizeStories(formattedStories);
+        setStories(sortedStories);
         
         // Initialize hover counts for each story
         const initialHoverCounts: Record<string, number> = {};
@@ -56,6 +57,50 @@ const StoryGrid = () => {
     
     fetchStories();
   }, []);
+  
+  // Function to organize stories with priority ones first and ensure category diversity
+  const organizeStories = (allStories: Story[]) => {
+    // Find Prosocial Wikipedia story
+    const prosocialWikipedia = allStories.find(s => s.title === 'Prosocial Wikipedia');
+    
+    // Select initial featured stories (one from each category if possible)
+    const categories = ['learning', 'community', 'collaboration', 'discovery', 'creativity', 'abundance', 'care', 'ai'];
+    
+    // Create an array of compelling stories to feature first
+    const featuredStories: Story[] = [];
+    
+    // Add Prosocial Wikipedia first if found
+    if (prosocialWikipedia) {
+      featuredStories.push(prosocialWikipedia);
+      // Remove from consideration for other featured spots
+      allStories = allStories.filter(s => s.id !== prosocialWikipedia.id);
+    }
+    
+    // Get most liked story from each category (max one per category)
+    const usedCategories = new Set<string>(prosocialWikipedia ? [prosocialWikipedia.category] : []);
+    
+    // Sort by likes within each category
+    categories.forEach(category => {
+      if (!usedCategories.has(category)) {
+        const storiesInCategory = allStories
+          .filter(s => s.category === category)
+          .sort((a, b) => b.likes - a.likes);
+        
+        if (storiesInCategory.length > 0) {
+          featuredStories.push(storiesInCategory[0]);
+          // Remove the selected story from allStories
+          allStories = allStories.filter(s => s.id !== storiesInCategory[0].id);
+          usedCategories.add(category);
+        }
+      }
+    });
+    
+    // Sort remaining stories by likes
+    const remainingStories = allStories.sort((a, b) => b.likes - a.likes);
+    
+    // Combine featured stories with remaining stories
+    return [...featuredStories, ...remainingStories];
+  };
   
   const handleLike = async (id: string) => {
     // Find the story and toggle its like status in the UI first (optimistic update)
@@ -137,11 +182,11 @@ const StoryGrid = () => {
               onClick={() => filterStories(category)}
               className={
                 activeCategory === category 
-                  ? "bg-amber-500 hover:bg-amber-600" 
-                  : "border-amber-300 text-amber-700 hover:bg-amber-100"
+                  ? "bg-relational-coral hover:bg-relational-coral/90" 
+                  : "border-relational-coral/30 text-relational-coral/80 hover:bg-relational-coral/10"
               }
             >
-              {category === 'all' ? 'All Stories' : category.charAt(0).toUpperCase() + category.slice(1)}
+              {category === 'all' ? 'All Stories' : category === 'ai' ? 'AI' : category.charAt(0).toUpperCase() + category.slice(1)}
             </Button>
           ))}
         </div>
