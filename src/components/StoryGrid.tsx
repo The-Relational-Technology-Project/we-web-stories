@@ -12,6 +12,7 @@ const StoryGrid = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [activeCategory, setActiveCategory] = useState<CategoryType>('all');
   const [loading, setLoading] = useState(true);
+  const [hoverCounts, setHoverCounts] = useState<Record<string, number>>({});
   
   useEffect(() => {
     const fetchStories = async () => {
@@ -37,6 +38,14 @@ const StoryGrid = () => {
         }));
         
         setStories(formattedStories);
+        
+        // Initialize hover counts for each story
+        const initialHoverCounts: Record<string, number> = {};
+        formattedStories.forEach(story => {
+          // Set initial hover count to 10% of the likes count to start with some "wear"
+          initialHoverCounts[story.id] = Math.floor(story.likes * 0.1);
+        });
+        setHoverCounts(initialHoverCounts);
       } catch (err) {
         console.error('Error fetching stories:', err);
         toast.error('Failed to load stories');
@@ -88,6 +97,19 @@ const StoryGrid = () => {
     }
   };
   
+  const handleCardHover = (id: string) => {
+    setHoverCounts(prevCounts => ({
+      ...prevCounts,
+      [id]: (prevCounts[id] || 0) + 1
+    }));
+  };
+  
+  const getHoverIntensity = (id: string) => {
+    const count = hoverCounts[id] || 0;
+    // Calculate intensity from 0 to 5 based on hover count
+    return Math.min(Math.floor(count / 5), 5);
+  };
+  
   const filterStories = (category: CategoryType) => {
     setActiveCategory(category);
   };
@@ -101,9 +123,9 @@ const StoryGrid = () => {
   return (
     <section id="stories" className="py-16 bg-amber-50/50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">Stories from the Relational Web</h2>
+        <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">Stories from the Future</h2>
         <p className="text-center text-gray-600 mb-10 max-w-2xl mx-auto">
-          Explore vignettes from a future where the internet connects us in meaningful, local, and serendipitous ways.
+          Explore vignettes from the future relational web where the internet connects us in meaningful, local, and serendipitous ways.
         </p>
         
         <div className="flex flex-wrap justify-center gap-2 mb-10">
@@ -136,6 +158,8 @@ const StoryGrid = () => {
                   key={story.id} 
                   story={story} 
                   onLike={handleLike}
+                  onHover={() => handleCardHover(story.id)}
+                  hoverIntensity={getHoverIntensity(story.id)}
                 />
               ))
             ) : (

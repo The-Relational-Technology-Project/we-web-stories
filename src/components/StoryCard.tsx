@@ -11,6 +11,8 @@ import { toast } from 'sonner';
 interface StoryCardProps {
   story: Story;
   onLike: (id: string) => void;
+  onHover?: () => void;
+  hoverIntensity?: number;
 }
 
 const categoryColors = {
@@ -24,7 +26,17 @@ const categoryColors = {
   ai: 'bg-violet-100 text-violet-800'
 };
 
-const StoryCard: React.FC<StoryCardProps> = ({ story, onLike }) => {
+// Wear effect classes based on hover intensity
+const wearClasses = [
+  '', // 0 - no wear
+  'shadow-inner', // 1 - light wear
+  'shadow-inner bg-amber-50/80', // 2 - noticeable wear
+  'shadow-inner bg-amber-50/70', // 3 - medium wear
+  'shadow-inner bg-amber-50/60 border-opacity-80', // 4 - heavy wear
+  'shadow-inner bg-amber-50/50 border-opacity-70' // 5 - very heavy wear
+];
+
+const StoryCard: React.FC<StoryCardProps> = ({ story, onLike, onHover, hoverIntensity = 0 }) => {
   const [remixText, setRemixText] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   
@@ -46,12 +58,20 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, onLike }) => {
   };
   
   return (
-    <Card className="card-gradient h-full flex flex-col transition-all duration-300 hover:shadow-lg animate-fade-in">
+    <Card 
+      className={`card-gradient h-full flex flex-col transition-all duration-300 hover:shadow-lg animate-fade-in ${wearClasses[hoverIntensity]}`}
+      onMouseEnter={() => onHover?.()}
+    >
       <CardContent className="p-5 flex-grow">
         <div className="flex justify-between items-start mb-3">
           <span className={`text-xs px-2 py-1 rounded-full ${categoryColors[story.category]}`}>
             {story.category.charAt(0).toUpperCase() + story.category.slice(1)}
           </span>
+          {hoverIntensity > 0 && (
+            <div className="text-xs text-gray-400">
+              {hoverIntensity > 3 ? 'Popular' : 'Emerging'}
+            </div>
+          )}
         </div>
         <h3 className="text-xl font-bold mb-2 text-relational-navy">{story.title}</h3>
         <p className="text-gray-600">{story.description}</p>
