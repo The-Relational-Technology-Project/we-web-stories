@@ -31,6 +31,13 @@ export const stories: Story[] = [
     category: 'ai'
   },
   {
+    id: '8',
+    title: "Humans and Non-Humans",
+    description: "In our neighborhood network, trees and plants and pets and wild animals all have names and profiles and backstories – and participate in our mutual aid network, sharing their needs and offers and aspirations (human-translated) with humans.",
+    likes: 50,
+    category: 'community'
+  },
+  {
     id: '4',
     title: 'Prosocial AI',
     description: "You upload some family financials to an AI chat and get some great suggested actions. Even better, you get offers to connect with five other families facing surprisingly similar situations, and one who navigated all of this successfully over the past year!",
