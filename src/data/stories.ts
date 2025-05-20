@@ -50,5 +50,12 @@ export const stories: Story[] = [
     description: "As you watch a DIY home repair video, you're connected with a retired contractor two blocks away who's available this weekend to help guide you through the process.",
     likes: 37,
     category: 'community'
+  },
+  {
+    id: '7',
+    title: 'Relational Rideshare',
+    description: "Recognizing that car journeys are an ideal place for a real conversation, matched riders and drivers in our community equip one another with conversation-starting questions to ask!",
+    likes: 45,
+    category: 'community'
   }
 ];

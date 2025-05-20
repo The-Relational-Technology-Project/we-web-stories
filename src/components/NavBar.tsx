@@ -3,6 +3,13 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 
 const NavBar = () => {
+  const scrollToContact = () => {
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <nav className="py-4 px-6 md:px-10 w-full">
       <div className="container mx-auto flex justify-between items-center">
@@ -26,6 +33,7 @@ const NavBar = () => {
         <Button 
           className="bg-relational-coral hover:bg-relational-coral/90 text-white"
           size="sm"
+          onClick={scrollToContact}
         >
           Join the Community
         </Button>
