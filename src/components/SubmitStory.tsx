@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import ReCaptcha from './ReCaptcha';
 
 const SubmitStory = () => {
   const [title, setTitle] = useState('');
@@ -15,12 +16,20 @@ const SubmitStory = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [recaptchaError, setRecaptchaError] = useState(false);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title || !description || !category) {
       toast.error('Please fill out all required fields');
+      return;
+    }
+    
+    if (!recaptchaToken) {
+      setRecaptchaError(true);
+      toast.error('Please verify that you are human');
       return;
     }
     
@@ -53,12 +62,20 @@ const SubmitStory = () => {
       setCategory('');
       setEmail('');
       setName('');
+      setRecaptchaToken(null);
       
     } catch (err) {
       console.error('Error submitting story:', err);
       toast.error('Failed to submit your story');
     } finally {
       setSubmitting(false);
+    }
+  };
+  
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
+    if (token) {
+      setRecaptchaError(false);
     }
   };
   
@@ -136,6 +153,11 @@ const SubmitStory = () => {
                 />
               </div>
             </div>
+            
+            <ReCaptcha 
+              onChange={handleRecaptchaChange}
+              error={recaptchaError}
+            />
             
             <Button 
               type="submit" 

@@ -6,18 +6,27 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import ReCaptcha from './ReCaptcha';
 
 const ContactSection = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [recaptchaError, setRecaptchaError] = useState(false);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name || !email || !message) {
       toast.error('Please fill out all fields');
+      return;
+    }
+    
+    if (!recaptchaToken) {
+      setRecaptchaError(true);
+      toast.error('Please verify that you are human');
       return;
     }
     
@@ -40,12 +49,20 @@ const ContactSection = () => {
       setName('');
       setEmail('');
       setMessage('');
+      setRecaptchaToken(null);
       
     } catch (err) {
       console.error('Error submitting contact form:', err);
       toast.error('Failed to send your message');
     } finally {
       setSubmitting(false);
+    }
+  };
+  
+  const handleRecaptchaChange = (token: string | null) => {
+    setRecaptchaToken(token);
+    if (token) {
+      setRecaptchaError(false);
     }
   };
   
@@ -138,6 +155,11 @@ const ContactSection = () => {
                     required
                   />
                 </div>
+                
+                <ReCaptcha 
+                  onChange={handleRecaptchaChange}
+                  error={recaptchaError}
+                />
                 
                 <Button 
                   type="submit" 
