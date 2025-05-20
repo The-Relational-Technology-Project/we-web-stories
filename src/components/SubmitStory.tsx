@@ -18,6 +18,32 @@ const SubmitStory = () => {
   const [submitting, setSubmitting] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
   const [recaptchaError, setRecaptchaError] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  
+  const verifyRecaptcha = async (token: string): Promise<boolean> => {
+    try {
+      setVerifying(true);
+      
+      const { data, error } = await supabase.functions.invoke('verify-recaptcha', {
+        body: { token },
+      });
+      
+      if (error || !data?.success) {
+        console.error('reCAPTCHA verification failed:', error || data);
+        setRecaptchaError(true);
+        toast.error('Human verification failed');
+        return false;
+      }
+      
+      return true;
+    } catch (err) {
+      console.error('Error verifying reCAPTCHA:', err);
+      toast.error('Verification service unavailable');
+      return false;
+    } finally {
+      setVerifying(false);
+    }
+  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,9 +55,13 @@ const SubmitStory = () => {
     
     if (!recaptchaToken) {
       setRecaptchaError(true);
-      toast.error('Please verify that you are human');
+      toast.error('Please wait for verification');
       return;
     }
+    
+    // First verify the reCAPTCHA token
+    const isVerified = await verifyRecaptcha(recaptchaToken);
+    if (!isVerified) return;
     
     setSubmitting(true);
     
@@ -162,9 +192,9 @@ const SubmitStory = () => {
             <Button 
               type="submit" 
               className="w-full bg-relational-teal hover:bg-relational-teal/90"
-              disabled={submitting}
+              disabled={submitting || verifying}
             >
-              {submitting ? 'Submitting...' : 'Submit Your Story'}
+              {verifying ? 'Verifying...' : submitting ? 'Submitting...' : 'Submit Your Story'}
             </Button>
           </form>
         </div>

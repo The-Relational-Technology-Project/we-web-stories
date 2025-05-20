@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { Label } from '@/components/ui/label';
 
@@ -8,25 +8,40 @@ interface ReCaptchaProps {
   error?: boolean;
 }
 
-// Using a public test key for reCAPTCHA
-// In production, this would be replaced with your actual site key
-const RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+// Your actual reCAPTCHA v3 site key
+const RECAPTCHA_SITE_KEY = '6Lfg90ErAAAAAFwdeltNZN4VVxSAJgVBgXiBERwG';
 
 const ReCaptcha = ({ onChange, error }: ReCaptchaProps) => {
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+  
+  useEffect(() => {
+    // Execute reCAPTCHA when component mounts (for v3 invisible captcha)
+    const executeRecaptcha = async () => {
+      if (recaptchaRef.current) {
+        const token = await recaptchaRef.current.executeAsync();
+        onChange(token);
+      }
+    };
+    
+    executeRecaptcha();
+  }, [onChange]);
+  
   return (
     <div className="space-y-2">
       <Label className={error ? 'text-red-500' : ''}>
-        Verify you're human
+        Verification
         {error && <span className="ml-1 text-red-500">*</span>}
       </Label>
-      <div className="flex justify-start">
+      <div className="hidden">
         <ReCAPTCHA
+          ref={recaptchaRef}
           sitekey={RECAPTCHA_SITE_KEY}
           onChange={onChange}
+          size="invisible"
         />
       </div>
       {error && (
-        <p className="text-sm text-red-500">Please complete the CAPTCHA</p>
+        <p className="text-sm text-red-500">Human verification failed. Please try again.</p>
       )}
     </div>
   );
