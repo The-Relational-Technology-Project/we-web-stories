@@ -55,13 +55,39 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, onLike, onHover, hoverInte
     }
   };
   
-  const handleRemixSubmit = () => {
-    if (remixText.trim()) {
+  const handleRemixSubmit = async () => {
+    if (!remixText.trim()) {
+      toast.error('Please enter your suggestion');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      // Save the remix suggestion to Supabase
+      const { error } = await supabase
+        .from('remix_suggestions')
+        .insert([
+          { 
+            story_id: story.id,
+            remix_text: remixText
+          }
+        ]);
+        
+      if (error) {
+        console.error('Error submitting remix:', error);
+        toast.error('Failed to submit remix');
+        return;
+      }
+      
       toast.success('Your remix suggestion has been submitted!');
       setRemixText('');
       setDialogOpen(false);
-    } else {
-      toast.error('Please enter your suggestion');
+    } catch (err) {
+      console.error('Error submitting remix suggestion:', err);
+      toast.error('Failed to submit remix');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -186,8 +212,12 @@ const StoryCard: React.FC<StoryCardProps> = ({ story, onLike, onHover, hoverInte
               </div>
               
               <DialogFooter>
-                <Button onClick={handleRemixSubmit} className="bg-relational-purple hover:bg-relational-purple/90">
-                  Submit Remix
+                <Button 
+                  onClick={handleRemixSubmit} 
+                  className="bg-relational-purple hover:bg-relational-purple/90"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Submit Remix'}
                 </Button>
               </DialogFooter>
             </DialogContent>

@@ -68,6 +68,35 @@ export type Database = {
         }
         Relationships: []
       }
+      remix_suggestions: {
+        Row: {
+          created_at: string
+          id: string
+          remix_text: string
+          story_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          remix_text: string
+          story_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          remix_text?: string
+          story_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "remix_suggestions_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stories: {
         Row: {
           category: string
