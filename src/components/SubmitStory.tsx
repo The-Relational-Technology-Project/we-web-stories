@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import ReCaptcha from './ReCaptcha';
 
 const SubmitStory = () => {
   const [title, setTitle] = useState('');
@@ -16,34 +15,6 @@ const SubmitStory = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
-  const [recaptchaError, setRecaptchaError] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  
-  const verifyRecaptcha = async (token: string): Promise<boolean> => {
-    try {
-      setVerifying(true);
-      
-      const { data, error } = await supabase.functions.invoke('verify-recaptcha', {
-        body: { token },
-      });
-      
-      if (error || !data?.success) {
-        console.error('reCAPTCHA verification failed:', error || data);
-        setRecaptchaError(true);
-        toast.error('Human verification failed');
-        return false;
-      }
-      
-      return true;
-    } catch (err) {
-      console.error('Error verifying reCAPTCHA:', err);
-      toast.error('Verification service unavailable');
-      return false;
-    } finally {
-      setVerifying(false);
-    }
-  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,16 +23,6 @@ const SubmitStory = () => {
       toast.error('Please fill out all required fields');
       return;
     }
-    
-    if (!recaptchaToken) {
-      setRecaptchaError(true);
-      toast.error('Please wait for verification');
-      return;
-    }
-    
-    // First verify the reCAPTCHA token
-    const isVerified = await verifyRecaptcha(recaptchaToken);
-    if (!isVerified) return;
     
     setSubmitting(true);
     
@@ -92,20 +53,12 @@ const SubmitStory = () => {
       setCategory('');
       setEmail('');
       setName('');
-      setRecaptchaToken(null);
       
     } catch (err) {
       console.error('Error submitting story:', err);
       toast.error('Failed to submit your story');
     } finally {
       setSubmitting(false);
-    }
-  };
-  
-  const handleRecaptchaChange = (token: string | null) => {
-    setRecaptchaToken(token);
-    if (token) {
-      setRecaptchaError(false);
     }
   };
   
@@ -184,17 +137,12 @@ const SubmitStory = () => {
               </div>
             </div>
             
-            <ReCaptcha 
-              onChange={handleRecaptchaChange}
-              error={recaptchaError}
-            />
-            
             <Button 
               type="submit" 
               className="w-full bg-relational-teal hover:bg-relational-teal/90"
-              disabled={submitting || verifying}
+              disabled={submitting}
             >
-              {verifying ? 'Verifying...' : submitting ? 'Submitting...' : 'Submit Your Story'}
+              {submitting ? 'Submitting...' : 'Submit Your Story'}
             </Button>
           </form>
         </div>
